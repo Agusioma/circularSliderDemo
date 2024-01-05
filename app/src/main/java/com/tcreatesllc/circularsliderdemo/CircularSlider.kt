@@ -34,33 +34,30 @@ fun CircularSlider(
     stroke: Float = 20f,
     cap: StrokeCap = StrokeCap.Round,
     touchStroke: Float = 50f,
-    thumbColor: Color = Color.Blue,
-    progressColor: Color = Color.Black,
-    backgroundColor: Color = Color.LightGray,
-    debug: Boolean = false,
-    onChange: ((Float)->Unit)? = null
-){
+    onChange: ((Float) -> Unit)? = null
+) {
     var width by remember { mutableStateOf(0) }
     var height by remember { mutableStateOf(0) }
     var angle by remember { mutableStateOf(0f) }
     var last by remember { mutableStateOf(0f) }
-    var down  by remember { mutableStateOf(false) }
+    var down by remember { mutableStateOf(false) }
     var radius by remember { mutableStateOf(0f) }
     var center by remember { mutableStateOf(Offset.Zero) }
     var appliedAngle by remember { mutableStateOf(0f) }
-    LaunchedEffect(key1 = angle){
 
-        if(angle < 0.0f && angle > -90f){
+    LaunchedEffect(key1 = angle) {
+
+        if (angle < 0.0f && angle > -90f) {
             angle = 0.0f
-        }else if(angle < 0.0f && angle < -90f){
+        } else if (angle < 0.0f && angle < -90f) {
             angle = 180.0f
-        }else if(angle>=180f){
+        } else if (angle >= 180f) {
             angle = 180f
         }
 
         appliedAngle = angle
 
-        onChange?.invoke(angle/180f)
+        onChange?.invoke(angle / 180f)
     }
 
 
@@ -68,7 +65,8 @@ fun CircularSlider(
         colorStops = arrayOf(
             0.0f to Color(0xFFD9C7DF),
             0.4f to Color(0xFF99C4EF),
-            3.0f to Color(0xFFD9C7DF))
+            3.0f to Color(0xFFD9C7DF)
+        )
     )
 
     Canvas(
@@ -77,7 +75,7 @@ fun CircularSlider(
                 width = it.size.width
                 height = it.size.height
                 center = Offset(width / 2f, height / 2f)
-                radius = min(width.toFloat(), height.toFloat()) / 2f - padding - stroke/2f
+                radius = min(width.toFloat(), height.toFloat()) / 2f - padding - stroke / 2f
             }
             .pointerInteropFilter {
                 val x = it.x
@@ -88,98 +86,53 @@ fun CircularSlider(
                     MotionEvent.ACTION_DOWN -> {
                         val d = distance(offset, center)
                         val a = angle(center, offset)
-                        if (d >= radius - touchStroke / 2f && d <= radius + touchStroke / 2f && a !in -120f..-60f) {
+                        if (d >= radius - touchStroke / 2f && d <= radius + touchStroke / 2f && a !in -181f..-1f) {
                             down = true
                             angle = a
                         } else {
                             down = false
                         }
                     }
+
                     MotionEvent.ACTION_MOVE -> {
                         if (down) {
                             angle = angle(center, offset)
                         }
                     }
+
                     MotionEvent.ACTION_UP -> {
                         down = false
                     }
+
                     else -> return@pointerInteropFilter false
                 }
                 return@pointerInteropFilter true
             }
-    ){
+    ) {
 
         drawArc(
             brush = gradient,
             ///color = backgroundColor,
             startAngle = -180f,
             sweepAngle = 180f,
-            topLeft = center - Offset(radius,radius),
-            size = Size(radius*2,radius*2),
+            topLeft = center - Offset(radius, radius),
+            size = Size(radius * 2, radius * 2),
             useCenter = false,
             style = Stroke(
                 width = stroke,
                 cap = cap
             )
         )
-        /*drawArc(
-            color = progressColor,
-            startAngle = -180f,
-            sweepAngle = appliedAngle,
-            topLeft = center - Offset(radius,radius),
-            size = Size(radius*2,radius*2),
-            useCenter = false,
-            style = Stroke(
-                width = stroke,
-                cap = cap
-            )
-        )*/
+
         drawCircle(
             color = Color.White,
             radius = 30f,
             center = center + Offset(
-                radius*cos((-180+appliedAngle)*PI/180f).toFloat(),
-                radius*sin((-180+appliedAngle)*PI/180f).toFloat()
+                radius * cos((-180 + appliedAngle) * PI / 180f).toFloat(),
+                radius * sin((-180 + appliedAngle) * PI / 180f).toFloat()
             )
         )
-        if(debug){
-            drawRect(
-                color = Color.Green,
-                topLeft = Offset.Zero,
-                size = Size(width.toFloat(),height.toFloat()),
-                style = Stroke(
-                    4f
-                )
-            )
-            drawRect(
-                color = Color.Red,
-                topLeft = Offset(padding,padding),
-                size = Size(width.toFloat()-padding*2,height.toFloat()-padding*2),
-                style = Stroke(
-                    4f
-                )
-            )
-            drawRect(
-                color = Color.Blue,
-                topLeft = Offset(padding,padding),
-                size = Size(width.toFloat()-padding*2,height.toFloat()-padding*2),
-                style = Stroke(
-                    4f
-                )
-            )
-            drawCircle(
-                color = Color.Red,
-                center = center,
-                radius = radius+stroke/2f,
-                style = Stroke(2f)
-            )
-            drawCircle(
-                color = Color.Red,
-                center = center,
-                radius = radius-stroke/2f,
-                style = Stroke(2f)
-            )
-        }
+
     }
 }
 
@@ -188,9 +141,11 @@ fun angle(center: Offset, offset: Offset): Float {
     val deg = Math.toDegrees(rad.toDouble())
     return deg.toFloat()
 }
-fun distance(first: Offset, second: Offset) : Float{
-    return sqrt((first.x-second.x).square()+(first.y-second.y).square())
+
+fun distance(first: Offset, second: Offset): Float {
+    return sqrt((first.x - second.x).square() + (first.y - second.y).square())
 }
-fun Float.square(): Float{
-    return this*this
+
+fun Float.square(): Float {
+    return this * this
 }
