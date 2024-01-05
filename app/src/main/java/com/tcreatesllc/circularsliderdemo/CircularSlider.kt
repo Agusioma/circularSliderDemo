@@ -1,15 +1,11 @@
 package com.tcreatesllc.circularsliderdemo
 
 
-import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,26 +42,25 @@ fun CircularSlider(
 ){
     var width by remember { mutableStateOf(0) }
     var height by remember { mutableStateOf(0) }
-    var angle by remember { mutableStateOf(-60f) }
+    var angle by remember { mutableStateOf(0f) }
     var last by remember { mutableStateOf(0f) }
     var down  by remember { mutableStateOf(false) }
     var radius by remember { mutableStateOf(0f) }
     var center by remember { mutableStateOf(Offset.Zero) }
     var appliedAngle by remember { mutableStateOf(0f) }
     LaunchedEffect(key1 = angle){
-        var a = angle
-        a += 0
-        /*if(a<=0f){
-            a += 360
-        }*/
-        a = a.coerceIn(0f,180f)
-        if(last<150f&&a==180f){
-            a = 0f
-        }
-        last = a
-        appliedAngle = a
 
-        onChange?.invoke(a/180f)
+        if(angle < 0.0f && angle > -90f){
+            angle = 0.0f
+        }else if(angle < 0.0f && angle < -90f){
+            angle = 180.0f
+        }else if(angle>=180f){
+            angle = 180f
+        }
+
+        appliedAngle = angle
+
+        onChange?.invoke(angle/180f)
     }
 
 

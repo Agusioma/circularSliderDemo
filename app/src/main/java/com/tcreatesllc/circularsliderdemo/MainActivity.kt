@@ -163,6 +163,7 @@ fun sliderBox(mainViewModel: MainViewModel) {
         CircularSlider(
             modifier = Modifier.fillMaxSize().padding(25.dp),
         ) {
+            Log.d("Original VAL", "${it * 180}")
             var sliderPercentage = it
             var currTempValue = 16 + (sliderPercentage * 16)
             var roundedTempValue = String.format("%.0f", currTempValue)
