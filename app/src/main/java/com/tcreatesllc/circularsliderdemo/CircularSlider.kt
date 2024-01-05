@@ -39,8 +39,7 @@ fun CircularSlider(
     var width by remember { mutableStateOf(0) }
     var height by remember { mutableStateOf(0) }
     var angle by remember { mutableStateOf(0f) }
-    var last by remember { mutableStateOf(0f) }
-    var down by remember { mutableStateOf(false) }
+    var nearTheThumbIndicator by remember { mutableStateOf(false) }
     var radius by remember { mutableStateOf(0f) }
     var center by remember { mutableStateOf(Offset.Zero) }
     var appliedAngle by remember { mutableStateOf(0f) }
@@ -86,22 +85,22 @@ fun CircularSlider(
                     MotionEvent.ACTION_DOWN -> {
                         val d = distance(offset, center)
                         val a = angle(center, offset)
-                        if (d >= radius - touchStroke / 2f && d <= radius + touchStroke / 2f && a !in -181f..-1f) {
-                            down = true
+                        if (d >= radius - touchStroke / 2f && d <= radius + touchStroke / 2f) {
+                            nearTheThumbIndicator = true
                             angle = a
                         } else {
-                            down = false
+                            nearTheThumbIndicator = false
                         }
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        if (down) {
+                        if (nearTheThumbIndicator) {
                             angle = angle(center, offset)
                         }
                     }
 
                     MotionEvent.ACTION_UP -> {
-                        down = false
+                        nearTheThumbIndicator = false
                     }
 
                     else -> return@pointerInteropFilter false
@@ -112,7 +111,6 @@ fun CircularSlider(
 
         drawArc(
             brush = gradient,
-            ///color = backgroundColor,
             startAngle = -180f,
             sweepAngle = 180f,
             topLeft = center - Offset(radius, radius),
